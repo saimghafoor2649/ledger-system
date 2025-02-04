@@ -1,0 +1,35 @@
+{
+    "labels": [
+      "January", 
+      "February", 
+      "March", 
+      "April", 
+      "May", 
+      "June", 
+      "July", 
+      "August", 
+      "September", 
+      "October", 
+      "November", 
+      "December"
+    ],
+    "datasets": [
+      {
+        "label": "Monthly Revenue",
+        "data": [12000, 15000, 13000, 17000, 20000, 22000, 19000, 21000, 23000, 25000, 24000, 26000],
+        "backgroundColor": "blue",
+        "borderColor": "blue",
+        "borderWidth": 2,
+        "fill": true
+      },
+      {
+        "label": "Monthly Cost",
+        "data": [10000, 11000, 9000, 8000, 10000, 19000, 15000, 15000, 15000, 20000, 20000, 20000],
+        "backgroundColor": "#FF3030",
+        "borderColor": "#FF3030",
+        "borderWidth": 2,
+        "fill": true
+      }
+    ]
+  }
+  

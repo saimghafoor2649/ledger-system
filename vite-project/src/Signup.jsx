@@ -2,19 +2,32 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./signup.css";
-
+import patternbg from "./assets/patternbg.jpg";
+import logo from "./assets/logo1_ramayworldzone.png";
 function Signup() {
   const navigate = useNavigate();
-
-  const handleloginRedirect = () => {
-    navigate("/login");
-  };
 
   const [Name, setName] = useState("");
   const [Email, setEmail] = useState("");
   const [Password, setPassword] = useState("");
   const [ConfirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regex for email validation
+    return emailRegex.test(email);
+  };
+
+  const handleEmailChange = (e) => {
+    const email = e.target.value;
+    setEmail(email);
+    if (!validateEmail(email)) {
+      setEmailError("Invalid email format. Please enter a valid email.");
+    } else {
+      setEmailError("");
+    }
+  };
 
   const validatePassword = (password) => {
     const errors = [];
@@ -36,10 +49,15 @@ function Signup() {
     const errors = validatePassword(password);
     setPasswordError(errors.join(" "));
   };
-  const register = async (event) => {
+
+  const handleRegistration = async (event) => {
     event.preventDefault();
     if (!Name || !Email || !Password || !ConfirmPassword) {
       alert("All fields are required.");
+      return;
+    }
+    if (emailError) {
+      alert("Please fix the email error before proceeding.");
       return;
     }
     if (Password !== ConfirmPassword) {
@@ -47,89 +65,80 @@ function Signup() {
       return;
     }
     try {
+      // Directly register the user without OTP
       const res = await axios.post("http://localhost:8081/register", {
         Name,
         Email,
         Password,
         ConfirmPassword,
       });
-      alert("Registered successfully!");
-      navigate("/login");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to register.");
+      alert("Registration successful!");
+      navigate("/");
+    } catch (res) {
+      console.error(res);
+      alert("Registration failed.");
     }
   };
 
   return (
-    <div className="signup-container">
-      <h2 className="text-center">Register</h2>
-      <form>
-        <ul>
-          <li>
-            <label htmlFor="name">Name</label>
-          </li>
-          <li>
-            <input
-              type="text"
-              name="fname"
-              className="form-control"
-              onChange={(e) => setName(e.target.value)}
-            />
-          </li>
-          <li>
-            <label htmlFor="email">Email</label>
-          </li>
-          <li>
-            <input
-              type="text"
-              name="Email"
-              className="form-control"
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </li>
-          <li>
-            <label htmlFor="password">Password</label>
-          </li>
-          <li>
-            <input
-              type="password"
-              name="password"
-              className="form-control"
-              onChange={handlePasswordChange}
-            />
-          </li>
-          {passwordError && (
-            <p style={{ color: "red", fontSize: "14px" }}>{passwordError}</p>
-          )}
-          <li>
-            <label htmlFor="confirmpassword">Confirm Password</label>
-          </li>
-          <li>
-            <input
-              type="password"
-              name="confirmpassword"
-              className="form-control"
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </li>
-          <li>
-            <input
-              type="submit"
-              name="submit"
-              className="btn btn-success w-100"
-              onClick={register}
-            />
-          </li>
-        </ul>
-      </form>
-      <p className="text-center">Already have an account?</p>
-      <button
-        onClick={handleloginRedirect}
-        className="btn btn-default border w-100 bg-light mb-1"
-      >
-        Login
-      </button>
+    <div>
+      <div className="logo-container">
+        <img src={logo} alt="Logo" className="logo" />
+      </div>
+      <div className="signup-container">
+        <h2 className="text-center">Register</h2>
+        <form>
+          <ul>
+            <li>
+              <label htmlFor="name">Name</label>
+              <input
+                type="text"
+                className="form-control"
+                onChange={(e) => setName(e.target.value)}
+              />
+            </li>
+            <li>
+              <label htmlFor="email">Email</label>
+              <input
+                type="text"
+                className="form-control"
+                onChange={handleEmailChange}
+              />
+              {emailError && (
+                <p style={{ color: "red", fontSize: "14px" }}>{emailError}</p>
+              )}
+            </li>
+            <li>
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                className="form-control"
+                onChange={handlePasswordChange}
+              />
+            </li>
+            {passwordError && (
+              <p style={{ color: "red", fontSize: "14px" }}>{passwordError}</p>
+            )}
+            <li>
+              <label htmlFor="confirmpassword">Confirm Password</label>
+              <input
+                type="password"
+                className="form-control"
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </li>
+            <li>
+              <button
+                type="submit"
+                className="btn btn-success w-100"
+                onClick={handleRegistration}
+              >
+                Register
+              </button>
+            </li>
+          </ul>
+        </form>
+      </div>
     </div>
   );
 }
