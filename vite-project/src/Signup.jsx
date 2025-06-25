@@ -66,7 +66,7 @@ function Signup() {
     }
     try {
       // Directly register the user without OTP
-      const res = await axios.post("http://localhost:8081/register", {
+      const res = await axios.post("http://localhost:8081/api/auth/register", {
         Name,
         Email,
         Password,
