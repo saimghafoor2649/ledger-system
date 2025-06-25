@@ -9,9 +9,24 @@ import Productform from "./Productform";
 import CreditVoucher from "./CreditVoucher";
 import Admin from "./Admin";
 import Logout from "./Logout";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function App() {
   return (
     <BrowserRouter>
+      {/* Toast Container - should be at root level */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Routes>
         <Route path="/register" element={<Signup />}></Route>
         <Route path="/" element={<Login />}></Route>

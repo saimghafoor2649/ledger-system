@@ -12,6 +12,7 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import customerRoutes from "./routes/customerRoutes.js";
 const app = express();
 connectDB();
 app.use(express.json());
@@ -43,6 +44,7 @@ const loginLimiter = rateLimit({
   legacyHeaders: false,
 });
 app.use("/api/auth", loginLimiter, authRoutes);
+app.use("/api/customers", customerRoutes);
 /*
 app.post("/request-otp", async (req, res) => {
     const { Email } = req.body;

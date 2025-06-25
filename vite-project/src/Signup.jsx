@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 import "./signup.css";
 import patternbg from "./assets/patternbg.jpg";
 import logo from "./assets/logo1_ramayworldzone.png";
+
 function Signup() {
   const navigate = useNavigate();
-
   const [Name, setName] = useState("");
   const [Email, setEmail] = useState("");
   const [Password, setPassword] = useState("");
@@ -15,7 +16,7 @@ function Signup() {
   const [emailError, setEmailError] = useState("");
 
   const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regex for email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
@@ -32,13 +33,13 @@ function Signup() {
   const validatePassword = (password) => {
     const errors = [];
     if (password.length < 10) {
-      errors.push("Password must be greater than 10 characters.");
+      errors.push("Password must be at least 10 characters.");
     }
     if (!/[A-Z]/.test(password)) {
-      errors.push("Password must include at least one uppercase letter.");
+      errors.push("Include at least one uppercase letter.");
     }
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      errors.push("Password must include at least one special character.");
+      errors.push("Include at least one special character.");
     }
     return errors;
   };
@@ -52,31 +53,46 @@ function Signup() {
 
   const handleRegistration = async (event) => {
     event.preventDefault();
+
     if (!Name || !Email || !Password || !ConfirmPassword) {
-      alert("All fields are required.");
+      toast.error("All fields are required.");
       return;
     }
+
     if (emailError) {
-      alert("Please fix the email error before proceeding.");
+      toast.error("Please fix the email error before proceeding.");
       return;
     }
+
     if (Password !== ConfirmPassword) {
-      alert("Passwords do not match.");
+      toast.error("Passwords do not match.");
       return;
     }
+
+    if (passwordError) {
+      toast.error("Please fix the password requirements.");
+      return;
+    }
+
     try {
-      // Directly register the user without OTP
       const res = await axios.post("http://localhost:8081/api/auth/register", {
         Name,
         Email,
         Password,
         ConfirmPassword,
       });
-      alert("Registration successful!");
-      navigate("/");
-    } catch (res) {
-      console.error(res);
-      alert("Registration failed.");
+
+      toast.success("Registration successful! Redirecting to login...");
+      setTimeout(() => navigate("/"), 2000); // Redirect after 2 seconds
+    } catch (error) {
+      console.error(error);
+      if (error.response?.data?.error) {
+        toast.error(error.response.data.error);
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Registration failed. Please try again.");
+      }
     }
   };
 
@@ -87,14 +103,16 @@ function Signup() {
       </div>
       <div className="signup-container">
         <h2 className="text-center">Register</h2>
-        <form>
+        <form onSubmit={handleRegistration}>
           <ul>
             <li>
               <label htmlFor="name">Name</label>
               <input
                 type="text"
                 className="form-control"
+                value={Name}
                 onChange={(e) => setName(e.target.value)}
+                required
               />
             </li>
             <li>
@@ -102,7 +120,9 @@ function Signup() {
               <input
                 type="text"
                 className="form-control"
+                value={Email}
                 onChange={handleEmailChange}
+                required
               />
               {emailError && (
                 <p style={{ color: "red", fontSize: "14px" }}>{emailError}</p>
@@ -113,26 +133,28 @@ function Signup() {
               <input
                 type="password"
                 className="form-control"
+                value={Password}
                 onChange={handlePasswordChange}
+                required
               />
+              {passwordError && (
+                <p style={{ color: "red", fontSize: "14px" }}>
+                  {passwordError}
+                </p>
+              )}
             </li>
-            {passwordError && (
-              <p style={{ color: "red", fontSize: "14px" }}>{passwordError}</p>
-            )}
             <li>
               <label htmlFor="confirmpassword">Confirm Password</label>
               <input
                 type="password"
                 className="form-control"
+                value={ConfirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                required
               />
             </li>
             <li>
-              <button
-                type="submit"
-                className="btn btn-success w-100"
-                onClick={handleRegistration}
-              >
+              <button type="submit" className="btn btn-success w-100">
                 Register
               </button>
             </li>

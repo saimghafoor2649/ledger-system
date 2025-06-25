@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 import "./signup.css";
 import patternbg from "./assets/patternbg.jpg";
 import logo from "./assets/logo1_ramayworldzone.png";
 import "./Dashboard.jsx";
+
 function Login() {
   const navigate = useNavigate();
-
   const [Email, setEmail] = useState("");
   const [Password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -33,16 +34,16 @@ function Login() {
     event.preventDefault();
 
     if (!Email || !Password) {
-      alert("All fields are required.");
+      toast.error("All fields are required.");
       return;
     }
     if (emailError) {
-      alert(emailError);
+      toast.error(emailError);
       return;
     }
     if (Email === "admin@gmail.com" && Password === "Admin12345@") {
-      alert("Welcome, Admin!");
-      navigate("/Admin"); // Navigate to the Admin page
+      toast.success("Welcome, Admin!");
+      navigate("/Admin");
       return;
     }
     try {
@@ -50,14 +51,14 @@ function Login() {
         Email,
         Password,
       });
-      alert(res.data.message);
+      toast.success(res.data.message);
       navigate("/Dashboard");
     } catch (err) {
       console.error(err);
       if (err.response) {
-        alert(err.response.data.error);
+        toast.error(err.response.data.error || "Login failed");
       } else {
-        alert("Failed to login. Please try again.");
+        toast.error("Failed to login. Please try again.");
       }
     }
   };
@@ -69,7 +70,7 @@ function Login() {
       </div>
       <div className="signup-container">
         <h2 className="text-center">Login</h2>
-        <form>
+        <form onSubmit={login}>
           <ul>
             <li>
               <label htmlFor="email">Email</label>
@@ -78,6 +79,7 @@ function Login() {
                 name="Email"
                 className="form-control"
                 onChange={handleEmailChange}
+                value={Email}
               />
               {emailError && (
                 <p style={{ color: "red", fontSize: "14px" }}>{emailError}</p>
@@ -90,17 +92,13 @@ function Login() {
                 name="password"
                 className="form-control"
                 onChange={(e) => setPassword(e.target.value)}
-                //onChange={handlePasswordChange}
+                value={Password}
               />
             </li>
-
             <li>
-              <input
-                onClick={login}
-                type="submit"
-                name="submit"
-                className="btn btn-success w-100"
-              />
+              <button type="submit" className="btn btn-success w-100">
+                Login
+              </button>
             </li>
           </ul>
         </form>
@@ -115,4 +113,5 @@ function Login() {
     </>
   );
 }
+
 export default Login;
