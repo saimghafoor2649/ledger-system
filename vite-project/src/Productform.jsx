@@ -1,92 +1,94 @@
-import React from "react";
-import { useState } from "react";
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import "./Customerform.css";
 import logo from "./assets/logo1_ramayworldzone.png";
 import backgroundvideo from "./assets/back_video.mp4";
-import "./Sidebar";
 import Sidebar from "./Sidebar";
 
 function Productform() {
-  const [productname, setproductname] = useState("");
-  const [products, setProducts] = useState([]); // State to store product data
-  const [searchTerm, setSearchTerm] = useState(""); // State for search term
-  const [editproductId, setEditProductId] = useState(null);
-  // Handle edit button click
-  const handleEdit = (product) => {
-    setproductname(product.productname);
-    setEditProductId(product.productid);
-  };
+  const [productname, setProductName] = useState("");
+  const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [editProductId, setEditProductId] = useState(null);
 
   useEffect(() => {
-    // Fetch products from the database
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get("http://localhost:8081/Productform");
-        setProducts(response.data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
     fetchProducts();
-  }, []); // Empty dependency array ensures this runs once when the component loads
+  }, []);
 
-  const productinfo = async (event) => {
+  // Fetch products from MongoDB
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/Productform");
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      toast.error("Failed to load products.");
+    }
+  };
+
+  // Handle form submission
+  const productInfo = async (event) => {
     event.preventDefault();
 
     if (!productname) {
-      alert("All fields are required.");
+      toast.warn("Product name is required.");
       return;
     }
 
-    if (editproductId) {
-      // Update existing product
-      const res = await axios.put(
-        `http://localhost:8081/Productform/${editproductId}`,
-        {
+    try {
+      if (editProductId) {
+        // Update existing product
+        await axios.put(`http://localhost:8081/Productform/${editProductId}`, {
           productname,
-        }
-      );
-    } else {
-      // Add new product
-      const res = await axios.post("http://localhost:8081/Productform", {
-        productname,
-      });
-      if (res.status === 200 || res.status === 201) {
-        alert("Added product successfully");
+        });
+        toast.success("Product updated successfully");
       } else {
-        alert("Failed to add product. Please try again.");
+        // Add new product
+        await axios.post("http://localhost:8081/Productform", { productname });
+        toast.success("Product added successfully");
       }
-    }
 
-    setEditProductId(null); // Clear the edit state
-    setproductname(""); // Reset the input field
-    setProducts([...products]); // Trigger re-render
+      setEditProductId(null);
+      setProductName("");
+      fetchProducts(); // refresh list
+    } catch (err) {
+      console.error("Error saving product:", err);
+      toast.error("Error occurred while saving product.");
+    }
   };
 
-  // Filter products based on the search term
+  // Edit button logic
+  const handleEdit = (product) => {
+    setProductName(product.productname);
+    setEditProductId(product._id);
+  };
+
+  // Filter by search term
   const filteredProducts = products.filter((product) =>
     product.productname.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <>
+      <ToastContainer />
       <div className="video-background">
         <video autoPlay loop muted>
           <source src={backgroundvideo} type="video/mp4" />
         </video>
       </div>
+
       <div className="container-fluid">
         <div className="row">
-          <Sidebar></Sidebar>
+          <Sidebar />
 
-          {/* Main Content Area */}
           <main className="col-12 col-md-9 mt-4 mt-md-0">
             <div className="p-4 bg-light rounded shadow">
               <h3>Product Form</h3>
               <div className="container border-black border-3 shadow col-md-6">
-                <form>
+                <form onSubmit={productInfo}>
                   <ul>
                     <li>
                       <label className="fw-bold" htmlFor="Name">
@@ -98,21 +100,21 @@ function Productform() {
                         name="Name"
                         placeholder="Product name"
                         value={productname}
-                        onChange={(e) => setproductname(e.target.value)}
+                        onChange={(e) => setProductName(e.target.value)}
                       />
                     </li>
                     <li>
                       <input
-                        onClick={productinfo}
                         className="btn btn-success w-30"
                         type="submit"
-                        value={editproductId ? "Update" : "Submit"}
+                        value={editProductId ? "Update" : "Submit"}
                       />
                     </li>
                   </ul>
                 </form>
               </div>
-              {/* Search Box */}
+
+              {/* Search box */}
               <div className="mt-4">
                 <input
                   type="text"
@@ -122,7 +124,8 @@ function Productform() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              {/* Product Table */}
+
+              {/* Product list table */}
               <h3 className="mt-4">Product List</h3>
               <div className="table-responsive">
                 <table className="table table-striped table-bordered">
@@ -136,8 +139,8 @@ function Productform() {
                   <tbody>
                     {filteredProducts.length > 0 ? (
                       filteredProducts.map((product) => (
-                        <tr key={product.productid}>
-                          <td>{product.productid}</td>
+                        <tr key={product._id}>
+                          <td>{product._id}</td>
                           <td>{product.productname}</td>
                           <td>
                             <button
@@ -151,7 +154,7 @@ function Productform() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="2" className="text-center">
+                        <td colSpan="3" className="text-center">
                           No product found.
                         </td>
                       </tr>
@@ -166,4 +169,5 @@ function Productform() {
     </>
   );
 }
+
 export default Productform;

@@ -13,6 +13,7 @@ import crypto from "crypto";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import customerRoutes from "./routes/customerRoutes.js";
+import productRoutes from "./routes/productRoute.js";
 const app = express();
 connectDB();
 app.use(express.json());
@@ -45,6 +46,7 @@ const loginLimiter = rateLimit({
 });
 app.use("/api/auth", loginLimiter, authRoutes);
 app.use("/api/customers", customerRoutes);
+app.use("/", productRoutes);
 /*
 app.post("/request-otp", async (req, res) => {
     const { Email } = req.body;
@@ -187,7 +189,7 @@ app.post("/login", (req, res) => {
 });
 
 */
-
+/*
 app.post("/Customerform", (req, res) => {
   const sql =
     "Insert into customerinfo (`customerid`, `customername`, `customerphoneno`) VALUES (?,?,?)";
@@ -243,6 +245,8 @@ app.delete("/Customerform/:id", (req, res) => {
     return res.status(200).json({ message: "Customer delete successfully" });
   });
 });
+
+*/
 
 app.post("/Productform", (req, res) => {
   const sql = "Insert into productinfo (`productname`) VALUES (?)";

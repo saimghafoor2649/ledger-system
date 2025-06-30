@@ -28,7 +28,7 @@ export const login = async (req, res) => {
     const user = await User.findOne({ Email });
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    const isMatch = await bcrypt.compare(Password, user.Password);
+    const isMatch = bcrypt.compare(Password, user.Password);
     if (!isMatch) return res.status(401).json({ error: "Invalid password" });
 
     const token = jwt.sign({ Email: user.Email }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
