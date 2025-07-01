@@ -9,6 +9,8 @@ import Productform from "./Productform";
 import CreditVoucher from "./CreditVoucher";
 import Admin from "./Admin";
 import Logout from "./Logout";
+import ForgotPassword from "./ForgotPassword";
+import ResetPassword from "./ResetPassword";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 function App() {
@@ -36,6 +38,8 @@ function App() {
         <Route path="/CreditVoucher" element={<CreditVoucher />}></Route>
         <Route path="/Admin" element={<Admin />}></Route>
         <Route path="/logout" element={<Logout />}></Route>
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   );

@@ -109,6 +109,14 @@ function Login() {
         >
           Signup
         </button>
+        <p className="text-center mt-3">
+          <button
+            onClick={() => navigate("/forgot-password")}
+            className="btn btn-link"
+          >
+            Forgot Password?
+          </button>
+        </p>
       </div>
     </>
   );
