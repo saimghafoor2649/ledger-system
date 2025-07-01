@@ -29,13 +29,14 @@ function Customerform() {
   const handleEdit = (customer) => {
     setName(customer.name);
     setPhoneNo(customer.phoneNo);
-    setEditCustomerId(customer._id);
+    setEditCustomerId(customer.customerId);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (customerId) => {
+    // Changed parameter name from id to customerId
     if (window.confirm("Are you sure you want to delete this customer?")) {
       try {
-        await axios.delete(`http://localhost:8081/api/customers/${id}`);
+        await axios.delete(`http://localhost:8081/api/customers/${customerId}`);
         const response = await axios.get("http://localhost:8081/api/customers");
         setCustomers(response.data.data);
         toast.success("Customer deleted successfully");
@@ -57,7 +58,7 @@ function Customerform() {
 
     try {
       if (editCustomerId) {
-        // Update existing customer
+        // Update existing customer - ensure using customerId
         await axios.put(
           `http://localhost:8081/api/customers/${editCustomerId}`,
           {
@@ -126,7 +127,7 @@ function Customerform() {
                   </label>
                   <input
                     className="form-control"
-                    type="text"
+                    type="number"
                     placeholder="Phone Number"
                     value={phoneNo}
                     onChange={(e) => setPhoneNo(e.target.value)}
@@ -157,6 +158,7 @@ function Customerform() {
             <table className="table table-striped table-bordered">
               <thead>
                 <tr>
+                  <th>Id</th>
                   <th>Name</th>
                   <th>Phone Number</th>
                   <th>Action</th>
@@ -166,7 +168,8 @@ function Customerform() {
               <tbody>
                 {filteredCustomers.length > 0 ? (
                   filteredCustomers.map((customer) => (
-                    <tr key={customer._id}>
+                    <tr key={customer.customerId}>
+                      <td>{customer.customerId}</td>
                       <td>{customer.name}</td>
                       <td>{customer.phoneNo}</td>
                       <td>
@@ -180,7 +183,7 @@ function Customerform() {
                       <td>
                         <button
                           className="btn btn-danger"
-                          onClick={() => handleDelete(customer._id)}
+                          onClick={() => handleDelete(customer.customerId)}
                         >
                           Delete
                         </button>

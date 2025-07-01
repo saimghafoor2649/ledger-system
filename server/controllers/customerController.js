@@ -42,10 +42,13 @@ export const getCustomers = async (req, res) => {
   }
 };
 
-// Update a customer
+// Update a customer - Modified version
 export const updateCustomer = async (req, res) => {
   try {
-    const customer = await Customer.findByIdAndUpdate(req.params.id, req.body, {
+    // Convert ID to number since params are strings
+    const customerId = Number(req.params.customerId);
+
+    const customer = await Customer.findOneAndUpdate({ customerId }, req.body, {
       new: true,
       runValidators: true,
     });
@@ -54,6 +57,7 @@ export const updateCustomer = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Customer not found",
+        details: `No customer found with ID: ${customerId}`,
       });
     }
 
@@ -63,6 +67,7 @@ export const updateCustomer = async (req, res) => {
       data: customer,
     });
   } catch (error) {
+    console.error("Update error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to update customer",
@@ -72,22 +77,31 @@ export const updateCustomer = async (req, res) => {
 };
 
 // Delete a customer
+// Delete a customer - Modified version
 export const deleteCustomer = async (req, res) => {
   try {
-    const customer = await Customer.findByIdAndDelete(req.params.id);
+    // Convert ID to number
+    const customerId = Number(req.params.customerId);
+
+    const customer = await Customer.findOneAndDelete({
+      customerId,
+    });
 
     if (!customer) {
       return res.status(404).json({
         success: false,
         message: "Customer not found",
+        details: `No customer found with ID: ${customerId}`,
       });
     }
 
     res.status(200).json({
       success: true,
       message: "Customer deleted successfully",
+      deletedId: customerId,
     });
   } catch (error) {
+    console.error("Delete error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to delete customer",

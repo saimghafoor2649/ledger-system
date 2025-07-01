@@ -46,7 +46,7 @@ const loginLimiter = rateLimit({
 });
 app.use("/api/auth", loginLimiter, authRoutes);
 app.use("/api/customers", customerRoutes);
-app.use("/", productRoutes);
+app.use("/api/products", productRoutes);
 /*
 app.post("/request-otp", async (req, res) => {
     const { Email } = req.body;

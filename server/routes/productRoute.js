@@ -7,8 +7,9 @@ import {
 
 const router = express.Router();
 
-router.post("/Productform", createProduct);
-router.get("/Productform", getAllProducts);
-router.put("/Productform/:id", updateProduct);
+// Use consistent route naming
+router.post("/", createProduct);
+router.get("/", getAllProducts);
+router.put("/:productId", updateProduct);
 
 export default router;

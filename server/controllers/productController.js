@@ -37,11 +37,9 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
-/**
- * Update a product by ID
- */
+// Update the updateProduct function
 export const updateProduct = async (req, res) => {
-  const { id } = req.params;
+  const productId = Number(req.params.productId);
   const { productname } = req.body;
 
   if (!productname) {
@@ -49,20 +47,31 @@ export const updateProduct = async (req, res) => {
   }
 
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(
-      id,
+    const updatedProduct = await Product.findOneAndUpdate(
+      { productId }, // Changed from findByIdAndUpdate to findOneAndUpdate
       { productname },
       { new: true }
     );
 
     if (!updatedProduct) {
-      return res.status(404).json({ message: "Product not found." });
+      return res.status(404).json({ 
+        success: false,
+        message: "Product not found.",
+        details: `No product found with ID: ${productId}`
+      });
     }
 
-    return res.status(200).json({ message: "Product updated successfully" });
+    return res.status(200).json({ 
+      success: true,
+      message: "Product updated successfully",
+      data: updatedProduct
+    });
   } catch (err) {
     console.error("Error updating product:", err);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ 
+      success: false,
+      error: "Internal Server Error",
+      details: err.message 
+    });
   }
 };
-

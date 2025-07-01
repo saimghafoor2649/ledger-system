@@ -21,7 +21,7 @@ function Productform() {
   // Fetch products from MongoDB
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:8081/Productform");
+      const response = await axios.get("http://localhost:8081/api/products");
       setProducts(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -41,13 +41,13 @@ function Productform() {
     try {
       if (editProductId) {
         // Update existing product
-        await axios.put(`http://localhost:8081/Productform/${editProductId}`, {
+        await axios.put(`http://localhost:8081/api/products/${editProductId}`, {
           productname,
         });
         toast.success("Product updated successfully");
       } else {
         // Add new product
-        await axios.post("http://localhost:8081/Productform", { productname });
+        await axios.post("http://localhost:8081/api/products", { productname });
         toast.success("Product added successfully");
       }
 
@@ -63,7 +63,7 @@ function Productform() {
   // Edit button logic
   const handleEdit = (product) => {
     setProductName(product.productname);
-    setEditProductId(product._id);
+    setEditProductId(product.productId);
   };
 
   // Filter by search term
@@ -139,8 +139,8 @@ function Productform() {
                   <tbody>
                     {filteredProducts.length > 0 ? (
                       filteredProducts.map((product) => (
-                        <tr key={product._id}>
-                          <td>{product._id}</td>
+                        <tr key={product.productId}>
+                          <td>{product.productId}</td>
                           <td>{product.productname}</td>
                           <td>
                             <button
